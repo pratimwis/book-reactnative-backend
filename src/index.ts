@@ -5,20 +5,22 @@ import authRouter from './routes/auth.route';
 import AppError from './utils/appError';
 import cookieparser from 'cookie-parser';
 import cors from 'cors';
-import job from './lib/cronJob';
+import bookRouter from './routes/book.route';
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT;
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieparser());
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true,
 }));
 
-job.start();
 app.use('/api/auth', authRouter);
+app.use('/api/books', bookRouter);
 
 // Global error handler
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -42,9 +44,8 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript with Express!');
 });
-const PORT = process.env.PORT ? Number(process.env.PORT) : 8001;
 
-app.listen(PORT,'0.0.0.0', () => {
+app.listen(PORT, () => {
   connectToDatabase();
-  console.log(`Server is running at http://0.0.0.0:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 });

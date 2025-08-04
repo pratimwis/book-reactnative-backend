@@ -48,7 +48,7 @@ export const signUpController = catchErrors(
       message: 'Sign Up successful',
       success: true,
       user: newUser,
-
+      accessToken: accessToken,
     });
   }
 );
@@ -56,7 +56,7 @@ export const signUpController = catchErrors(
 export const signInController = catchErrors(
   async (req: Request, res: Response) => {
     const { email, password }: { email: string; password: string } = req.body;
-
+    console.log(email, password);
     appAssert(
       !email || !password,
       BAD_REQUEST,
@@ -65,12 +65,14 @@ export const signInController = catchErrors(
     );
 
     const user = await User.findOne({ email });
-    appAssert(
-      !user,
-      NOT_FOUND,
-      'User does not exist',
-      AppErrorCode.UserNotFound
-    );
+    if (!user) {
+      appAssert(
+        false,
+        NOT_FOUND,
+        'User does not exist',
+        AppErrorCode.UserNotFound
+      );
+    }
 
     const isPasswordMatch = await bcryptjs.compare(password, user!.password);
     appAssert(
@@ -80,8 +82,8 @@ export const signInController = catchErrors(
       AppErrorCode.PasswordMismatch
     );
 
-    generateAccessToken(user?._id.toString(), res);
-    generateRefreshToken(user?._id.toString(), res);
+    generateAccessToken(user._id.toString(), res);
+    generateRefreshToken(user._id.toString(), res);
     res.status(OK).json({ message: 'Sign In successful', success: true, user });
   }
 );
