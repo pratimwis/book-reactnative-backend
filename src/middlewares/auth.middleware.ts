@@ -36,7 +36,16 @@ export const authMiddleware = catchErrors(
 
 export const protectedRoute = catchErrors(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.split(" ")[1] as string;
+     const authHeader = req.headers.authorization;
+    
+    appAssert(
+      !authHeader || !authHeader.startsWith("Bearer "),
+      UNAUTHORIZED,
+      "Unauthorized access, please login to continue",
+      AppErrorCode.Unauthorized
+    );
+
+    const token = authHeader?.split(" ")[1] as string;
     appAssert(
       !token,
       UNAUTHORIZED,
