@@ -49,6 +49,7 @@ export const signUpController = catchErrors(
       success: true,
       user: newUser,
       accessToken: accessToken,
+      refreshToken: refreshToken,
     });
   }
 );
@@ -82,9 +83,9 @@ export const signInController = catchErrors(
       AppErrorCode.PasswordMismatch
     );
 
-    generateAccessToken(user._id.toString(), res);
-    generateRefreshToken(user._id.toString(), res);
-    res.status(OK).json({ message: 'Sign In successful', success: true, user });
+    const accessToken = generateAccessToken(user._id.toString(), res);
+    const refreshToken = generateRefreshToken(user._id.toString(), res);
+    res.status(OK).json({ message: 'Sign In successful', success: true, user, accessToken, refreshToken });
   }
 );
 

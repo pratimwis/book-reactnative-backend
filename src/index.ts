@@ -6,6 +6,7 @@ import AppError from './utils/appError';
 import cookieparser from 'cookie-parser';
 import cors from 'cors';
 import bookRouter from './routes/book.route';
+import job from './lib/cronJob';  
 dotenv.config();
 
 const app = express();
@@ -18,6 +19,8 @@ app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true,
 }));
+
+job.start();  // Start the cron job
 
 app.use('/api/auth', authRouter);
 app.use('/api/books', bookRouter);
