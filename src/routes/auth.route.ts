@@ -1,6 +1,6 @@
 import express from 'express';
 import { checkAuth, signInController, signOutController, signUpController ,updateProfileController } from '../controllers/auth.controller';
-import { authMiddleware, protectedRoute } from '../middlewares/auth.middleware';
+import { protectedRoute } from '../middlewares/auth.middleware';
 
 const authRouter = express.Router();
 authRouter.post('/signin',signInController)
