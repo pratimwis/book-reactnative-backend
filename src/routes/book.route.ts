@@ -8,5 +8,5 @@ bookRouter.post("/add",protectedRoute,addBooks);
 bookRouter.get("/", protectedRoute,getBooks);
 bookRouter.get("/:id", protectedRoute, getBookById);
 bookRouter.delete("/:id", protectedRoute, deleteBook);
-bookRouter.get("/books/:userId", protectedRoute, getBooksByUser);
+bookRouter.get("/user/:id", protectedRoute, getBooksByUser);
 export default bookRouter;

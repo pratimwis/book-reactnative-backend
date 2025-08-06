@@ -5,6 +5,7 @@ import cloudinary from '../lib/cloudinary';
 import Book from '../models/book.model';
 import appAssert from '../utils/appAssert';
 import { catchErrors } from '../utils/catchErrors';
+import mongoose from 'mongoose';
 
 export const addBooks = catchErrors(async (req: Request, res: Response) => {
   const { title, caption, rating, image } = req.body;
@@ -112,14 +113,15 @@ export const deleteBook = catchErrors(async (req: Request, res: Response) => {
 
 export const getBooksByUser = catchErrors(
   async (req: Request, res: Response) => {
-    const userId = req.params.id;   
+    //convert id to mongoose ObjectId
+    console.log('User ID:', req.params.id);
     appAssert(
-      !userId,
+      !req.params.id,
       BAD_REQUEST,
       'User ID is required',
       AppErrorCode.UserIdRequired
     );
-    const books = await Book.find({ createBy: userId })
+    const books = await Book.find({ createBy: req.params.id })
       .sort({ createdAt: -1 })
       .populate('createBy', 'fname lname profilePicture');
     appAssert(
