@@ -20,6 +20,11 @@ const bookSchema = new mongoose.Schema(
       min:1,
       max: 5,
     },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
     createBy:{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
