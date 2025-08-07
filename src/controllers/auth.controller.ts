@@ -10,10 +10,10 @@ import cloudinary from '../lib/cloudinary';
 
 export const signUpController = catchErrors(
   async (req: Request, res: Response) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, userType } = req.body;
 
     appAssert(
-      !username || !email || !password,
+      !username || !email || !password || !userType,
       BAD_REQUEST,
       'All fields are required',
       AppErrorCode.MissingField
@@ -38,14 +38,17 @@ export const signUpController = catchErrors(
       username,
       password: hashedPassword,
       email,
+      userType,
     });
 
     await newUser.save();
+
+   
     const accessToken = generateAccessToken(newUser._id.toString(), res);
     const refreshToken = generateRefreshToken(newUser._id.toString(), res);
 
     res.status(CREATED).json({
-      message: 'Sign Up successful',
+      message: newUser.userType === 'buyer' ? 'Welcome to user dashboard' : 'Welcome to seller dashboard',
       success: true,
       user: newUser,
       accessToken: accessToken,
@@ -56,8 +59,7 @@ export const signUpController = catchErrors(
 
 export const signInController = catchErrors(
   async (req: Request, res: Response) => {
-    const { email, password }: { email: string; password: string } = req.body;
-    console.log(email, password);
+    const { email, password } = req.body;
     appAssert(
       !email || !password,
       BAD_REQUEST,
@@ -83,9 +85,24 @@ export const signInController = catchErrors(
       AppErrorCode.PasswordMismatch
     );
 
+    const userType = user.userType || 'buyer';
+    let message = '';
+    if (userType == 'buyer') {
+      message = 'Welcome to user dashboard';
+    } else {
+      message = 'Welcome to seller dashboard';
+    }
     const accessToken = generateAccessToken(user._id.toString(), res);
     const refreshToken = generateRefreshToken(user._id.toString(), res);
-    res.status(OK).json({ message: 'Sign In successful', success: true, user, accessToken, refreshToken });
+    res
+      .status(OK)
+      .json({
+        message: message,
+        success: true,
+        user,
+        accessToken,
+        refreshToken,
+      });
   }
 );
 
