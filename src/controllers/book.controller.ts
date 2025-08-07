@@ -8,9 +8,9 @@ import { catchErrors } from '../utils/catchErrors';
 import mongoose from 'mongoose';
 
 export const addBooks = catchErrors(async (req: Request, res: Response) => {
-  const { title, caption, rating, image } = req.body;
+  const { title, caption, rating, image, price } = req.body;
   appAssert(
-    !title || !caption || !rating || !image,
+    !title || !caption || !rating || !image || !price,
     BAD_REQUEST,
     'All fields are required',
     AppErrorCode.MissingField
@@ -29,6 +29,7 @@ export const addBooks = catchErrors(async (req: Request, res: Response) => {
     title,
     caption,
     rating,
+    price,
     image: uploadedResponse.secure_url,
     createBy: (req as any).user._id,
   });
